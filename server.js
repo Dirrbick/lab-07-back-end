@@ -31,17 +31,16 @@ app.get('/location', (request, response) => {
     errorHandler('Error 500! Something has gone wrong with the website server!', request, response);
   }
 });
+const weatherData = require('./data/darksky.json');
 
 app.get('/weather', (request, response) => {
   try{
-    const weatherData = require('./data/darksky.json');
-    const forecastData = [];
-    weatherData.daily.data.forEach( item => {
-      let time =  new Date(item.time * 1000).toString().slice(0,15);
-      let forecast = item.summary;
+    const forecastData = weatherData.daily.data.map( obj => {
+      let time =  new Date(obj.time * 1000).toString().slice(0,15);
+      let forecast = obj.summary;
+      // new Weather(time, forecast);
       let weatherObject = new Weather(time, forecast);
-      forecastData.push(weatherObject);
-    });
+      return weatherObject;});
     response.send(forecastData);
   }
   catch(error){
@@ -49,6 +48,16 @@ app.get('/weather', (request, response) => {
   }
 });
 
+// function convertWeatherData (weather) {
+//   // const weatherData = require('./data/darksky.json');
+//   // weather.daily.data.forEach( item => {
+//   let time =  new Date(weather.time * 1000).toString().slice(0,15);
+//   let forecast = weather.summary;
+//   // new Weather(time, forecast);
+//   let weatherObject = new Weather(time, forecast);
+//   return weatherObject;
+//   // forecastData.push(weatherObject);
+// }
 // This is our weather constructor function
 function Weather(time, forecast) {
   this.time = time;
