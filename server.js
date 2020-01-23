@@ -5,6 +5,7 @@ require('dotenv').config();
 //Global variables for server.js
 const express = require('express');
 const cors = require('cors');
+const superagent = require('superagent');
 
 const PORT = process.env.PORT;
 const app = express();
@@ -22,15 +23,29 @@ app.get('/wrong', (request, response) => {
 
 app.get('/location', (request, response) => {
   try{
-    const geoData = require('./data/geo.json');
+    // const geoData = require('./data/geo.json');
     const city = request.query.city;
-    const locationData = new Location(city, geoData);
-    response.send(locationData);
+    let key = process.env.GEOCODE_API_KEY;
+    let url = `https://us1.locationiq.com/v1/search.php?key=${key}&q=${city}&format=json&limit=1`;
+
+    // const locationData = new Location(city, geoData);
+    superagent.get(url)
+      .then( data => {
+        const geoData = data.body[0]; //this is the first item
+        const locationData = new Location(city, geoData);
+        response.send(locationData);
+      })
+      .catch( () => {
+        errorHandler('location broke', request, response);
+      })
+
   }
   catch(error){
     errorHandler('Error 500! Something has gone wrong with the website server!', request, response);
   }
 });
+
+// ALL THINGS WEATHER
 const weatherData = require('./data/darksky.json');
 
 app.get('/weather', (request, response) => {
@@ -66,9 +81,9 @@ function Weather(time, forecast) {
 // This is our location constructor function
 function Location(city, geoData){
   this.searchQuery = city;
-  this.formattedQuery = geoData[0].display_name;
-  this.latitude = geoData[0].lat;
-  this.longitude = geoData[0].lon;
+  this.formattedQuery = geoData.display_name;
+  this.latitude = geoData.lat;
+  this.longitude = geoData.lon;
 }
 
 function errorHandler(error, request, response) {
