@@ -28,7 +28,7 @@ app.get('/location', (request, response) => {
     response.send(locationData);
   }
   catch(error){
-    errorHandler('We are so SOOORRRRRY...something went wrong....', request, response);
+    errorHandler('Error 500! Something has gone wrong with the website server!', request, response);
   }
 });
 
@@ -45,7 +45,7 @@ app.get('/weather', (request, response) => {
     response.send(forecastData);
   }
   catch(error){
-    errorHandler('We are so SOOORRRRRY...something went wrong....', request, response);
+    errorHandler('Error 500! Something has gone wrong with the website server!', request, response);
   }
 });
 // this.time = new Date(day.time * 1000).toString().slice(0,15);
