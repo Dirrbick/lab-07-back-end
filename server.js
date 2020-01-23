@@ -48,12 +48,13 @@ app.get('/weather', (request, response) => {
     errorHandler('Error 500! Something has gone wrong with the website server!', request, response);
   }
 });
-// this.time = new Date(day.time * 1000).toString().slice(0,15);
+
+// This is our weather constructor function
 function Weather(time, forecast) {
   this.time = time;
   this.forecast = forecast;
 }
-
+// This is our location constructor function
 function Location(city, geoData){
   this.searchQuery = city;
   this.formattedQuery = geoData[0].display_name;
