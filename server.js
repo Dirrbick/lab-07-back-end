@@ -21,7 +21,14 @@ app.get('/wrong', (request, response) => {
   response.send('OOPS! You did it again. Wrong route.');
 });
 
-app.get('/location', (request, response) => {
+//Callback functions for information
+app.get('/location', locationCallback);
+app.get('/weather', weatherCallback);
+// app.get('/events', eventsCallback);
+// app.get('/', );
+// app.get('/', );
+
+function locationCallback (request, response) {
   try{
     // const geoData = require('./data/geo.json');
     const city = request.query.city;
@@ -37,46 +44,37 @@ app.get('/location', (request, response) => {
       })
       .catch( () => {
         errorHandler('location broke', request, response);
-      })
+      });
 
   }
   catch(error){
     errorHandler('Error 500! Something has gone wrong with the website server!', request, response);
   }
-});
+}
 
-// ALL THINGS WEATHER
-const weatherData = require('./data/darksky.json');
+function weatherCallback(request, response) {
+  let key = process.env.WEATHER_API_KEY;
+  let latitude = request.query.latitude;
+  let longitude = request.query.longitude;
+  let url = `https://api.darksky.net/forecast/${key}/${latitude},${longitude}`;
 
-app.get('/weather', (request, response) => {
-  try{
-    const forecastData = weatherData.daily.data.map( obj => {
-      let time =  new Date(obj.time * 1000).toString().slice(0,15);
-      let forecast = obj.summary;
-      // new Weather(time, forecast);
-      let weatherObject = new Weather(time, forecast);
-      return weatherObject;});
-    response.send(forecastData);
-  }
-  catch(error){
-    errorHandler('Error 500! Something has gone wrong with the website server!', request, response);
-  }
-});
+  superagent.get(url)
+    .then(data => {
+      const forecastData = data.body.daily.data.map( obj => {
+        // new Weather(time, forecast);
+        return new Weather(obj);
+      });
+      response.status(200).json(forecastData);
+    })
+    .catch(() => {
+      errorHandler('Error 500! Something has gone wrong with the website server!', request, response);
+    });
+}
 
-// function convertWeatherData (weather) {
-//   // const weatherData = require('./data/darksky.json');
-//   // weather.daily.data.forEach( item => {
-//   let time =  new Date(weather.time * 1000).toString().slice(0,15);
-//   let forecast = weather.summary;
-//   // new Weather(time, forecast);
-//   let weatherObject = new Weather(time, forecast);
-//   return weatherObject;
-//   // forecastData.push(weatherObject);
-// }
 // This is our weather constructor function
-function Weather(time, forecast) {
-  this.time = time;
-  this.forecast = forecast;
+function Weather(day) {
+  this.forecast = day.summary;
+  this.time = new Date(day.time * 1000).toString().slice(0,15);
 }
 // This is our location constructor function
 function Location(city, geoData){
