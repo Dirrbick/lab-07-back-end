@@ -68,8 +68,29 @@ Actual time needed to complete: 13 minutes
 Number and name of feature: Feature 4 Errors
 
 <!-- lab 7 features -->
+Feature 1
 
 Estimate of time needed to complete: 30 hour
+
+Start time: 7:40 pm
+
+Finish time: 8:30 pm
+
+Actual time needed to complete: 45 minutes
+
+Feature 2
+
+Estimate of time needed to complete: 1 hour
+
+Start time: 5 pm
+
+Finish time: 5:45 pm
+
+Actual time needed to complete: 45 minutes
+
+Feature 3
+
+Estimate of time needed to complete: ??
 
 Start time: 7:40 pm
 

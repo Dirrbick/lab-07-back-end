@@ -70,8 +70,35 @@ function weatherCallback(request, response) {
       errorHandler('Error 500! Something has gone wrong with the website server!', request, response);
     });
 }
+//Working with the events callback
+// function eventsCallback(request, response) {
+//   //Code here
+//   const city = request.query.city;
+//   let key = process.env.EVENTFUL_API_KEY;
+//   let url = `http://api.eventful.com/rest/events/search?${key}&keywords=books&location=${city}&date=Future`;
+
+//   superagent.get(url)
+//     .then(data => {
+//       const eventData = data.search.events.event.map( obj => {
+//         return new Events(obj);
+//       });
+//       response.status(200).json(eventData);
+//     })
+//     .catch(() => {
+//       errorHandler('Error 500! Something has gone wrong with the website server!', request, response);
+//     });
+// }
 
 // This is our weather constructor function
+// function Events(event) {
+//   this.title = event.title;
+//   this.url = event.url;
+//   this.description = event.description;
+//   this.start_time = event.start_time;
+//   this.end_time = event.end_time;
+
+// }
+
 function Weather(day) {
   this.forecast = day.summary;
   this.time = new Date(day.time * 1000).toString().slice(0,15);
