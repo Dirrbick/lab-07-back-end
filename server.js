@@ -7,6 +7,7 @@ const express = require('express');
 const cors = require('cors');
 const superagent = require('superagent');
 
+
 const PORT = process.env.PORT;
 const app = express();
 app.use(cors());
@@ -24,7 +25,7 @@ app.get('/wrong', (request, response) => {
 //Callback functions for information
 app.get('/location', locationCallback);
 app.get('/weather', weatherCallback);
-// app.get('/events', eventsCallback);
+app.get('/events', eventsCallback);
 // app.get('/', );
 // app.get('/', );
 
@@ -64,40 +65,40 @@ function weatherCallback(request, response) {
         // new Weather(time, forecast);
         return new Weather(obj);
       });
-      response.status(200).json(forecastData);
+      response.send(forecastData);
     })
     .catch(() => {
       errorHandler('Error 500! Something has gone wrong with the website server!', request, response);
     });
 }
-//Working with the events callback
-// function eventsCallback(request, response) {
-//   //Code here
-//   const city = request.query.city;
-//   let key = process.env.EVENTFUL_API_KEY;
-//   let url = `http://api.eventful.com/rest/events/search?${key}&keywords=books&location=${city}&date=Future`;
 
-//   superagent.get(url)
-//     .then(data => {
-//       const eventData = data.search.events.event.map( obj => {
-//         return new Events(obj);
-//       });
-//       response.status(200).json(eventData);
-//     })
-//     .catch(() => {
-//       errorHandler('Error 500! Something has gone wrong with the website server!', request, response);
-//     });
-// }
+// Working with the events callback
+function eventsCallback(request, response) {
+  let city = request.query.searchQuery;
+  const url = `http://api.eventful.com/json/events/search?app_key=${process.env.EVENTFUL_API_KEY}&location=${city}&date=Future`;
+  
+  superagent.get(url)
+    .then(data => {
+      let responseJson = JSON.parse(data.text);
+      
 
-// This is our weather constructor function
-// function Events(event) {
-//   this.title = event.title;
-//   this.url = event.url;
-//   this.description = event.description;
-//   this.start_time = event.start_time;
-//   this.end_time = event.end_time;
+      const events = responseJson.events.event.map(data => {
+        return new Event(data);
+      });
+      response.status(200).json(events);
+    })
+    .catch(() => {
+      errorHandler('You are SUPER WRONG!', request, response);
+    });
+}
 
-// }
+function Event(event) {
+  this.link = event.url;
+  this.name = event.title;
+  this.event_date = event.start_time;
+  this.summary = event.description;
+}
+
 
 function Weather(day) {
   this.forecast = day.summary;
